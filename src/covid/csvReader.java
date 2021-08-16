@@ -8,9 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -25,8 +23,31 @@ public class csvReader {
             String line = br.readLine();
             while (line != null) {
                 String[] attributes = line.split(",");
+                if(attributes.length != 8){
+                    line = br.readLine();
+                    continue;
+                }
                 Date date = format.parse(attributes[3]);
-                Row row = new Row(attributes[0],attributes[1],attributes[2],date,Integer.parseInt(attributes[4]),Integer.parseInt(attributes[5]),Integer.parseInt(attributes[6]));
+                int cases;
+                int deaths;
+                int peopleVaccinated;
+                try {
+                    cases = Integer.parseInt(attributes[4]);
+                } catch(NumberFormatException ex) {
+                    cases = 0;
+                }
+                try {
+                    deaths = Integer.parseInt(attributes[5]);
+                } catch(NumberFormatException ex) {
+                    deaths = 0;
+                }
+                try {
+                    peopleVaccinated = Integer.parseInt(attributes[6]);
+                } catch(NumberFormatException ex) {
+                    peopleVaccinated = 0;
+                }
+
+                Row row = new Row(attributes[0],attributes[1],attributes[2],date,cases,deaths,peopleVaccinated);
                 rows.add(row);
                 line = br.readLine();
             }
