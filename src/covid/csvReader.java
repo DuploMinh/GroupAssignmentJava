@@ -11,6 +11,7 @@ import java.text.ParseException;
 import java.util.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Calendar;
 
 public class csvReader {
     public static List<Row> readCSV(String fileName){
@@ -133,5 +134,15 @@ class Row{
 
     public void setPeopleVaccinated(int peopleVaccinated) {
         this.peopleVaccinated = peopleVaccinated;
+    }
+
+    public boolean isInDateRange(Date startDate, Date endDate){
+        Calendar c1 = Calendar.getInstance();
+        Calendar c2 = Calendar.getInstance();
+        c1.setTime(startDate);
+        c1.add(Calendar.DAY_OF_MONTH, -1);
+        c2.setTime(endDate);
+        c2.add(Calendar.DAY_OF_MONTH, 1);
+        return this.date.before(c2.getTime())&&this.date.after(c1.getTime());
     }
 }
