@@ -39,13 +39,13 @@ public class logicHandling {
         int index = 0;
         Row[][] ret = new Row[groups][length + 1];
         for (int i = 0; i < groups; i++) {
-            if (i == groups - 1) {
-                for (int x = 0; i < length + (list.size() % groups); i++) {
+            if (i <list.size() % groups) {
+                for (int x = 0; x < length + 1; x++) {
                     ret[i][x] = list.get(index);
                     index++;
                 }
             } else {
-                for (int x = 0; i < length; i++) {
+                for (int x = 0; x < length; x++) {
                     ret[i][x] = list.get(index);
                     index++;
                 }
