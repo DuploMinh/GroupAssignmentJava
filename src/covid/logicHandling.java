@@ -1,9 +1,6 @@
 package covid;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class logicHandling {
@@ -27,11 +24,28 @@ public class logicHandling {
     }
 
     public static List<Row> selectByCountry(String country, List<Row> input) {
-        return input.stream().filter(p -> p.getLocation().equals(country)).collect(Collectors.toList());
+        return input.stream().filter(p -> p.getLocation().equals(country)).sorted(Comparator.comparing(Row::getDate)).collect(Collectors.toList());
     }
 
-    public static List<Row> selectByContinent(String country, List<Row> input) {
-        return input.stream().filter(p -> p.getContinent().equals(country)).collect(Collectors.toList());
+    public static List<Row> selectByContinent(String continent, List<Row> input) {
+        List<Row> data = input.stream().filter(p -> p.getContinent().equals(continent)).collect(Collectors.toList());
+        Map<Date, List<Row>> temp = data.stream().collect(Collectors.groupingBy(Row::getDate));
+        List<Row> ret = new ArrayList<>();
+        temp = new TreeMap<>(temp);
+        for (List<Row> rows: temp.values()){
+            int cases = 0;
+            int deaths = 0;
+            int vaccinated = 0;
+            Date date = rows.get(0).getDate();
+            for (Row r: rows){
+                cases += r.getCases();
+                deaths += r.getDeaths();
+                vaccinated += r.getPeopleVaccinated();
+            }
+            Row row = new Row(null, continent,null,date,cases,deaths,vaccinated);
+            ret.add(row);
+        }
+        return ret;
     }
 
     public static Row[][] groupByGroups(int groups, List<Row> list) {
@@ -56,7 +70,7 @@ public class logicHandling {
     public static Row[][] groupByDays(int groups, List<Row> list) {
         int length = list.size()/groups;
         int index = 0;
-        if (list.size()/groups!=0){
+        if (list.size()%groups!=0){
             throw new InvalidGroup("Data could not be split into groups with this number of days");
         }
         Row[][] ret = new Row[length][groups];
