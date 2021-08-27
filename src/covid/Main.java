@@ -211,12 +211,12 @@ public class Main {
          System.out.println();
     }
     static class Displayable{
-        String label;
+        String range;
         String value;
 
-        public Displayable(String label, String value) {
-            this.label = label;
-            this.value = value;
+        public Displayable(String s_range, String s_value) {
+            this.range = s_range;
+            this.value = s_value;
         }
     }
 }
