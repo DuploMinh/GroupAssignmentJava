@@ -124,7 +124,7 @@ public class Main {
     }
     static void chart(Displayable[] display){
         //Chart display
-        
+                
          // Arrange the array base on result value
          Arrays.sort(display, (a, b) -> Integer.parseInt(a.value) < Integer.parseInt(b.value) ? -1 : 1);
          // Initialize variables
