@@ -2,12 +2,7 @@ package covid;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.stream.Collectors;
-import java.util.Arrays;
+import java.util.*;
 
 public class Main {
 
@@ -17,68 +12,141 @@ public class Main {
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         Scanner sc = new Scanner(System.in);
         do {
-            System.out.println("Select the geometric region search type? | 1) By continent | 2) By country | 0 to break");
+            System.out.println("Select the geographic region search type? | 1) By continent | 2) By country | 0 to break");
             int geo = Integer.parseInt(sc.nextLine());
-            System.out.println("Select the time range type? | 1) Start and end | 2) Number of days or weeks from a particular date  | 3) Number of days or weeks to a particular date  | 0 to break");
+            if (geo==0){break;}
+            System.out.println("Select the time range type? | 1) Start and end | 2) Number of days or weeks from a particular date  | 3) Number of days or weeks to a particular date | 0 to break");
             int timeRange = Integer.parseInt(sc.nextLine());
+            if (timeRange==0){break;}
             System.out.println("Select the date group type? | 1) No grouping | 2) Number of groups | 3) Number of days | 0 to break");
             int group = Integer.parseInt(sc.nextLine());
-            System.out.println("Select the metrics? | 1) No grouping | 2) Number of groups | 3) Number of days | 0 to break");
+            if (group==0){break;}
+            System.out.println("Select the metrics? | 1) Cases | 2) Deaths | 3) People Vaccinated | 0 to break");
             int metrics = Integer.parseInt(sc.nextLine());
+            if (metrics==0){break;}
             System.out.println("Select the Result type? | 1) New Total | 2) Up To | 0 to break");
             int resultType = Integer.parseInt(sc.nextLine());
+            if (resultType==0){break;}
+            System.out.println("Select the Display type? | 1) Tabular | 2) Chart | 0 to break");
+            int displayType = Integer.parseInt(sc.nextLine());
+            if (displayType==0){break;}
             String continent;
             String country;
             int dateToAdd;
             Date startDate;
             switch (geo) {
-                case 0:
-                    break;
-                case 1:
+                case 1 -> {
                     System.out.println("Continent?");
                     continent = sc.nextLine();
-                    test = logicHandling.selectByContinent(continent, test);
-                case 2:
+                    test = logicHandling.selectByContinent(continent, test, resultType);
+                }
+                case 2 -> {
                     System.out.println("Country?");
                     country = sc.nextLine();
-                    test = logicHandling.selectByCountry(country, test);
-                default:
-                    System.out.println("Invalid argument");
+                    test = logicHandling.selectByCountry(country, test, resultType);
+                }
+                default -> {
+                    System.out.println("Invalid argument, geographic region");
                     continue;
+                }
             }
             switch (timeRange) {
-                case 0:
-                    break;
-                case 1:
+                case 1 -> {
                     System.out.println("Start date? (dd/MM/yyyy)");
                     startDate = format.parse(sc.nextLine());
                     System.out.println("End date? (dd/MM/yyyy)");
                     Date endDate = format.parse(sc.nextLine());
-                    test = logicHandling.selectByDateInc(startDate,endDate,test);
-                case 2:
+                    test = logicHandling.selectByDateInc(startDate, endDate, test);
+                }
+                case 2 -> {
                     System.out.println("Start date? (dd/MM/yyyy)");
                     startDate = format.parse(sc.nextLine());
                     System.out.println("Weeks(1) or days(2)");
                     int addOpt = Integer.parseInt(sc.nextLine());
                     dateToAdd = getDateToAdd(sc, addOpt);
                     test = logicHandling.selectByDateFrom(startDate, dateToAdd, test);
-                case 3:
+                }
+                case 3 -> {
                     System.out.println("Start date? (dd/MM/yyyy)");
                     startDate = format.parse(sc.nextLine());
                     System.out.println("Weeks(1) or days(2)");
-                    addOpt = Integer.parseInt(sc.nextLine());
+                    int addOpt = Integer.parseInt(sc.nextLine());
                     dateToAdd = getDateToAdd(sc, addOpt);
                     test = logicHandling.selectByDateTo(startDate, dateToAdd, test);
-                default:
-                    System.out.println("Invalid argument");
+                }
+                default -> {
+                    System.out.println("Invalid argument, time range");
                     continue;
+                }
             }
+            System.out.println(test);
+            List<Displayable> display = new ArrayList<>();
             switch (group){
-                case 0:
                 case 1:
+                    for (Row r: test){
+
+                        int value=0;
+                    String name = format.format(r.getDate());
+                        switch (metrics) {
+                            case 1 -> value += r.getCases();
+                            case 2 -> value += r.getDeaths();
+                            case 3 -> value += r.getPeopleVaccinated();
+                        }
+                        Displayable temp = new Displayable(name, value);
+                        display.add(temp);
+                    }
+                    break;
                 case 2:
+                    System.out.println("Number of groups");
+                    int groups = Integer.parseInt(sc.nextLine());
+                    Row[][] grouped = logicHandling.groupByGroups(groups, test);
+                    handleGroups(format, metrics, resultType, (List<Displayable>) display, grouped);
+                    break;
+
+                case 3:
+                    System.out.println("Number of days");
+                    int days = Integer.parseInt(sc.nextLine());
+                    try {
+                        Row[][] groupedByDays = logicHandling.groupByDays(days, test);
+                        handleGroups(format, metrics, resultType, (List<Displayable>) display, groupedByDays);
+                        break;
+                    } catch (InvalidGroup e){
+                        e.printStackTrace();
+                    }
+                default:System.out.println("Invalid argument, groups");
+                    continue;
+
+            }
+            switch (displayType) {
+                case 1 -> tabular(display.toArray(new Displayable[0]));
+                case 2 -> chart(display.toArray(new Displayable[0]));
             }
         } while (true);
+    }
+
+    private static void handleGroups(SimpleDateFormat format, int metrics, int resultType, List<Displayable> display, Row[][] groupedByDays) {
+        for (Row[] r: groupedByDays){
+            int value=0;
+            String name = format.format(r[0].getDate())+"-"+format.format(r[r.length-1].getDate());
+            if (resultType == 1){
+                for (Row x: r){
+                switch (metrics){
+                    case 1 -> value += x.getCases();
+                    case 2 -> value += x.getDeaths();
+                    case 3 -> value += x.getPeopleVaccinated();
+                }}}
+            else {
+                value = switch (metrics) {
+                    case 1 -> r[r.length - 1].getCases();
+                    case 2 -> r[r.length - 1].getDeaths();
+                    case 3 -> r[r.length - 1].getPeopleVaccinated();
+                    default -> value;
+                };
+            }
+                Displayable temp = new Displayable(name, value);
+                display.add(temp);
+
+        }
     }
 
     private static int getDateToAdd(Scanner sc, int addOpt) {
@@ -126,11 +194,11 @@ public class Main {
         //Chart display
                 
          // Arrange the array base on result value
-         Arrays.sort(display, (a, b) -> Integer.parseInt(a.value) < Integer.parseInt(b.value) ? -1 : 1);
+         Arrays.sort(display, (a, b) -> a.value < (b.value) ? -1 : 1);
          // Initialize variables
          char[][] matrix = new char[24][80];
-         int max_value = Integer.parseInt(display[(display.length - 1)].value);
-         int min_value = Integer.parseInt(display[0].value);
+         int max_value = display[(display.length - 1)].value;
+         int min_value = display[0].value;
          int row_average = (max_value + min_value) / (matrix.length - 1);
          int top_value = max_value + row_average;
          int group_column = Math.round(matrix[0].length / (display.length) - 1);
@@ -152,7 +220,7 @@ public class Main {
              }
          }
          // Display the chart
-         int display_v = Integer.parseInt(display[index].value);
+         int display_v = display[index].value;
          System.out.println(display_v);
          for (int i = 0; i < matrix.length; i++) {
              if (i == 0) {
@@ -162,7 +230,7 @@ public class Main {
              System.out.print(top_value + "\t");
              top_value -= row_average;
              for (int j = 0; j < matrix[i].length; j++) {
-                 int display_value = Integer.parseInt(display[index].value);
+                 int display_value = display[index].value;
                  if (display_value >= top_value && display_value <= (top_value + row_average) && j == group_column_value) {
                      matrix[i][j] = '*';
                      index -= 1;
@@ -187,18 +255,14 @@ public class Main {
          group_column = group_column_holder;
          index = 0;
          //Initialized array to space String
-         for (int i = 0; i < x_column.length; i++) {
-             x_column[i] = " ";
-         }
+        Arrays.fill(x_column, " ");
          for (int i = 0; i < x_column.length; i++) {
              if (index == limit) {
                  break;
              }
              String[] name_array = display[index].range.split("");
              int char_length = name_array.length;
-             for (int j = 0; j < char_length; j++) {
-                 x_column[group_column + j] = name_array[j];
-             }
+             System.arraycopy(name_array, 0, x_column, group_column, char_length);
              index += 1;
              group_column += group_column_holder;
              if (group_column >= x_column.length) {
@@ -212,9 +276,9 @@ public class Main {
     }
     static class Displayable{
         String range;
-        String value;
+        int value;
 
-        public Displayable(String s_range, String s_value) {
+        public Displayable(String s_range, int s_value) {
             this.range = s_range;
             this.value = s_value;
         }
