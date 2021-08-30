@@ -5,7 +5,7 @@ import java.util.Date;
 
 public class Row {
     private String iso;
-    private String continent;
+    String continent;
     private String location;
     private Date date;
     private int cases;
@@ -14,7 +14,7 @@ public class Row {
 
     public Row(String iso, String continent, String location, Date date, int cases, int deaths, int peopleVaccinated) {
         this.iso = iso;
-        this.continent = continent;
+        this.continent = continent.replaceAll("\\s+","");
         this.location = location;
         this.date = date;
         this.cases = cases;

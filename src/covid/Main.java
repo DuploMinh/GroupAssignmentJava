@@ -3,12 +3,12 @@ package covid;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Main {
 
     public static void main(String[] args) throws ParseException {
-        // write your code here
-        List<Row> test = csvReader.readCSV("src/covid/covid-data.csv");
+        List<Row> data = csvReader.readCSV("src/covid/covid-data.csv");
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         Scanner sc = new Scanner(System.in);
         do {
@@ -38,12 +38,12 @@ public class Main {
                 case 1 -> {
                     System.out.println("Continent?");
                     continent = sc.nextLine();
-                    test = logicHandling.selectByContinent(continent, test, resultType);
+                    data = logicHandling.selectByContinent(continent, data, resultType);
                 }
                 case 2 -> {
                     System.out.println("Country?");
                     country = sc.nextLine();
-                    test = logicHandling.selectByCountry(country, test, resultType);
+                    data = logicHandling.selectByCountry(country, data, resultType);
                 }
                 default -> {
                     System.out.println("Invalid argument, geographic region");
@@ -56,7 +56,7 @@ public class Main {
                     startDate = format.parse(sc.nextLine());
                     System.out.println("End date? (dd/MM/yyyy)");
                     Date endDate = format.parse(sc.nextLine());
-                    test = logicHandling.selectByDateInc(startDate, endDate, test);
+                    data = logicHandling.selectByDateInc(startDate, endDate, data);
                 }
                 case 2 -> {
                     System.out.println("Start date? (dd/MM/yyyy)");
@@ -64,7 +64,7 @@ public class Main {
                     System.out.println("Weeks(1) or days(2)");
                     int addOpt = Integer.parseInt(sc.nextLine());
                     dateToAdd = getDateToAdd(sc, addOpt);
-                    test = logicHandling.selectByDateFrom(startDate, dateToAdd, test);
+                    data = logicHandling.selectByDateFrom(startDate, dateToAdd, data);
                 }
                 case 3 -> {
                     System.out.println("Start date? (dd/MM/yyyy)");
@@ -72,18 +72,17 @@ public class Main {
                     System.out.println("Weeks(1) or days(2)");
                     int addOpt = Integer.parseInt(sc.nextLine());
                     dateToAdd = getDateToAdd(sc, addOpt);
-                    test = logicHandling.selectByDateTo(startDate, dateToAdd, test);
+                    data = logicHandling.selectByDateTo(startDate, dateToAdd, data);
                 }
                 default -> {
                     System.out.println("Invalid argument, time range");
                     continue;
                 }
             }
-            System.out.println(test);
             List<Displayable> display = new ArrayList<>();
             switch (group){
                 case 1:
-                    for (Row r: test){
+                    for (Row r: data){
 
                         int value=0;
                     String name = format.format(r.getDate());
@@ -99,7 +98,7 @@ public class Main {
                 case 2:
                     System.out.println("Number of groups");
                     int groups = Integer.parseInt(sc.nextLine());
-                    Row[][] grouped = logicHandling.groupByGroups(groups, test);
+                    Row[][] grouped = logicHandling.groupByGroups(groups, data);
                     handleGroups(format, metrics, resultType, (List<Displayable>) display, grouped);
                     break;
 
@@ -107,7 +106,7 @@ public class Main {
                     System.out.println("Number of days");
                     int days = Integer.parseInt(sc.nextLine());
                     try {
-                        Row[][] groupedByDays = logicHandling.groupByDays(days, test);
+                        Row[][] groupedByDays = logicHandling.groupByDays(days, data);
                         handleGroups(format, metrics, resultType, (List<Displayable>) display, groupedByDays);
                         break;
                     } catch (InvalidGroup e){
@@ -121,6 +120,9 @@ public class Main {
                 case 1 -> tabular(display.toArray(new Displayable[0]));
                 case 2 -> chart(display.toArray(new Displayable[0]));
             }
+            System.out.println("Continue? 0/1");
+            int last = Integer.parseInt(sc.nextLine());
+            if (last==0){break;}
         } while (true);
     }
 

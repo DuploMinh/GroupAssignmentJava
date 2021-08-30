@@ -55,7 +55,7 @@ public class logicHandling {
     }
 
     public static List<Row> selectByContinent(String continent, List<Row> input, int resultType) {
-        List<Row> data = input.stream().filter(p -> p.getContinent().equals(continent)).collect(Collectors.toList());
+        List<Row> data = input.stream().filter(p -> continent.equals(p.getContinent())).collect(Collectors.toList());
         Map<Date, List<Row>> tempMap = data.stream().collect(Collectors.groupingBy(Row::getDate));
         List<Row> ret= new ArrayList<>();
         List<Row> temp= new ArrayList<>();
