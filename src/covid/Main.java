@@ -200,9 +200,9 @@ public class Main {
         Arrays.sort(display, (a, b) -> a.value < b.value ? -1 : 1);
         // Initialize variables
         char[][] matrix = new char[24][80];
-        if (display_array.length == 0) {
+        if (display.length == 0) {
             System.out.println("The set value is empty. There is nothing to display at the moment. Please select new data or exit: ");
-            return 0;
+            return;
         }
         int max_value = display[(display.length - 1)].value;
         int min_value = display[0].value;
