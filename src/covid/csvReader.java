@@ -15,6 +15,7 @@ import java.util.Date;
 
 public class csvReader {
     public static List<Row> readCSV(String fileName){
+        // parse csv and return an ArrayList of Rows
         SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
         List<Row> rows = new ArrayList<>();
         Path pathToFile = Paths.get(fileName);

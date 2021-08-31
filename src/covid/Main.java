@@ -50,6 +50,7 @@ public class Main {
                     continue;
                 }
             }
+            // time range selection handle
             switch (timeRange) {
                 case 1 -> {
                     System.out.println("Start date? (dd/MM/yyyy)");
@@ -80,6 +81,7 @@ public class Main {
                 }
             }
             List<Displayable> display = new ArrayList<>();
+            // group type handle
             switch (group){
                 case 1:
                     for (Row r: data){
@@ -99,7 +101,7 @@ public class Main {
                     System.out.println("Number of groups");
                     int groups = Integer.parseInt(sc.nextLine());
                     Row[][] grouped = logicHandling.groupByGroups(groups, data);
-                    handleGroups(format, metrics, resultType, (List<Displayable>) display, grouped);
+                    handleGroups(format, metrics, resultType, display, grouped);
                     break;
 
                 case 3:
@@ -107,7 +109,7 @@ public class Main {
                     int days = Integer.parseInt(sc.nextLine());
                     try {
                         Row[][] groupedByDays = logicHandling.groupByDays(days, data);
-                        handleGroups(format, metrics, resultType, (List<Displayable>) display, groupedByDays);
+                        handleGroups(format, metrics, resultType, display, groupedByDays);
                         break;
                     } catch (InvalidGroup e){
                         e.printStackTrace();
@@ -117,6 +119,7 @@ public class Main {
 
             }
             display.forEach(n -> System.out.println(n.value));
+            // display handle
             switch (displayType) {
                 case 1 -> tabular(display.toArray(new Displayable[0]));
                 case 2 -> chart(display.toArray(new Displayable[0]));

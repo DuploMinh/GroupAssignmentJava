@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class Row {
+    // This class represents each row of the CSV file
     private String iso;
     String continent;
     private String location;

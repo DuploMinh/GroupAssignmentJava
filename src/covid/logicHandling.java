@@ -5,10 +5,12 @@ import java.util.stream.Collectors;
 
 public class logicHandling {
     public static List<Row> selectByDateInc(Date startDate, Date endDate, List<Row> input) {
+        // Filter the date by Start and End date
         return input.stream().filter(p -> p.isInDateRange(startDate, endDate)).collect(Collectors.toList());
     }
 
     public static List<Row> selectByDateFrom(Date startDate, int number, List<Row> input) {
+        //Filter the date by Start date and number of days from that date
         Calendar c = Calendar.getInstance();
         c.setTime(startDate);
         c.add(Calendar.DAY_OF_MONTH, number);
@@ -16,6 +18,7 @@ public class logicHandling {
     }
 
     public static List<Row> selectByDateTo(Date startDate, int number, List<Row> input) {
+        //Filter the date by Start date and number of days to that date
         Calendar c = Calendar.getInstance();
         c.setTime(startDate);
         number *= -1;
@@ -24,6 +27,7 @@ public class logicHandling {
     }
 
     public static List<Row> selectByCountry(String country, List<Row> input, int resultType) {
+        // Filter the selection by country
         List<Row> temp = input.stream().filter(p -> p.getLocation().equals(country)).sorted(Comparator.comparing(Row::getDate)).collect(Collectors.toList());
         List<Row> ret= new ArrayList<>();
         List<Row> ret2= new ArrayList<>();
@@ -55,6 +59,7 @@ public class logicHandling {
     }
 
     public static List<Row> selectByContinent(String continent, List<Row> input, int resultType) {
+        // Filter the selection by continent and group them by date
         List<Row> data = input.stream().filter(p -> continent.equals(p.getContinent())).collect(Collectors.toList());
         Map<Date, List<Row>> tempMap = data.stream().collect(Collectors.groupingBy(Row::getDate));
         List<Row> ret= new ArrayList<>();
@@ -89,6 +94,7 @@ public class logicHandling {
     }
 
     public static Row[][] groupByGroups(int groups, List<Row> list) {
+        // Group data by number of groups
         int length = list.size() / groups;
         int index = 0;
         Row[][] ret = new Row[groups][length + 1];
@@ -108,6 +114,7 @@ public class logicHandling {
         return ret;
     }
     public static Row[][] groupByDays(int groups, List<Row> list) {
+        // group data by number of days
         int length = list.size()/groups;
         int index = 0;
         if (list.size()%groups!=0){
@@ -123,6 +130,7 @@ public class logicHandling {
         return ret;
     }
 }
+//days exception
 class InvalidGroup
         extends RuntimeException {
     public InvalidGroup(String errorMessage) {
