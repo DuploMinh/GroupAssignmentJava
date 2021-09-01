@@ -234,7 +234,6 @@ public class Main {
         }
         // Display the chart
         int display_v = display[index].value;
-        System.out.println(display_v);
         for (int i = 0; i < matrix.length; i++) {
             if (i == 0) {
                 System.out.println("\ty");
