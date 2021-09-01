@@ -120,7 +120,8 @@ public class Main {
                     continue;
 
             }
-            display.forEach(n -> System.out.println(n.value));
+//            display.forEach(n -> System.out.println(n.value));
+//            display.forEach(n -> System.out.println(n.range));
             // display handle
             switch (displayType) {
                 case 1 -> tabular(display.toArray(new Displayable[0]));
