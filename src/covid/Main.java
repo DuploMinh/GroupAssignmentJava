@@ -12,6 +12,7 @@ public class Main {
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         Scanner sc = new Scanner(System.in);
         do {
+            // receive user choices
             System.out.println("Select the geographic region search type? | 1) By continent | 2) By country | 0 to break");
             int geo = Integer.parseInt(sc.nextLine());
             if (geo==0){break;}
@@ -34,6 +35,7 @@ public class Main {
             String country;
             int dateToAdd;
             Date startDate;
+            // handle geographical filter
             switch (geo) {
                 case 1 -> {
                     System.out.println("Continent?");
